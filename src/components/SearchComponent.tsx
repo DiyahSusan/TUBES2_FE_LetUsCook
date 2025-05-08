@@ -1,9 +1,14 @@
 "use client"
 import { useState } from 'react';
-import { useSearch } from '@/components/SearchContext';
+import { useSearch } from './SearchContext'; // Adjust path as needed
 
-export default function SearchBar() {
-  const { searchQuery, setSearchQuery, mode, algorithm } = useSearch();
+interface SearchComponentProps {
+  onResultsReceived?: (results: any) => void;
+}
+
+export default function SearchComponent({ onResultsReceived }: SearchComponentProps) {
+  const { mode, algorithm, searchQuery, setSearchQuery, setMode, setAlgorithm } = useSearch();
+  const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,15 +63,13 @@ export default function SearchBar() {
         throw new Error(data.error || 'Unknown error occurred');
       }
 
-      // Store results in context or pass to parent
-      // This depends on your app structure
-      if (window.dispatchEvent) {
-        // Use a custom event to communicate with other components
-        window.dispatchEvent(new CustomEvent('search-results', { 
-          detail: data.data 
-        }));
-      }
+      // Set local results state
+      setResults(data.data);
       
+      // Also pass results to parent component if callback provided
+      if (onResultsReceived) {
+        onResultsReceived(data.data);
+      }
     } catch (err) {
       console.error("Search error:", err);
       setError(err instanceof Error ? err.message : 'An error occurred during search');
@@ -77,18 +80,52 @@ export default function SearchBar() {
 
   return (
     <div className="search-container">
-      <form onSubmit={handleSearch} className="flex items-center gap-2">
+      <form onSubmit={handleSearch}>
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Enter recipe URL or search query"
-          className="search-input flex-grow p-2 border rounded text-black"
+          placeholder="Enter your search query"
+          className="search-input"
         />
+        
+        <div className="mode-selector">
+          <button 
+            type="button"
+            className={`mode-btn ${mode === 'single' ? 'active' : ''}`}
+            onClick={() => setMode('single')}
+          >
+            Single Recipe
+          </button>
+          <button 
+            type="button"
+            className={`mode-btn ${mode === 'multiple' ? 'active' : ''}`}
+            onClick={() => setMode('multiple')}
+          >
+            Multiple Recipes
+          </button>
+        </div>
+        
+        <div className="algorithm-selector">
+          <button 
+            type="button"
+            className={`algo-btn ${algorithm === 'bfs' ? 'active' : ''}`}
+            onClick={() => setAlgorithm('bfs')}
+          >
+            BFS
+          </button>
+          <button 
+            type="button"
+            className={`algo-btn ${algorithm === 'dfs' ? 'active' : ''}`}
+            onClick={() => setAlgorithm('dfs')}
+          >
+            DFS
+          </button>
+        </div>
         
         <button 
           type="submit" 
-          className="search-btn bg-blue-500 text-white px-4 py-2 rounded"
+          className="search-btn"
           disabled={loading}
         >
           {loading ? 'Searching...' : 'Search'}
@@ -96,14 +133,22 @@ export default function SearchBar() {
       </form>
       
       {error && (
-        <div className="error-message text-red-500 mt-2">
+        <div className="error-message">
           {error}
         </div>
       )}
       
       {loading && (
-        <div className="loading text-gray-500 mt-2">
+        <div className="loading">
           Loading results...
+        </div>
+      )}
+      
+      {/* You can choose to show results here or rely on the parent component */}
+      {results && !loading && !onResultsReceived && (
+        <div className="results-container">
+          <h2>Search Results</h2>
+          <pre>{JSON.stringify(results, null, 2)}</pre>
         </div>
       )}
     </div>

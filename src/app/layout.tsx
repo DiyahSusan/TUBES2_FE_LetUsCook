@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import Option from "@/components/Option";
+import { SearchProvider } from "@/components/SearchContext";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,12 +20,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={inter.className}>
-        <Navbar/>
-        <SearchBar/>
-        <Option/>
-        {children}
+      <body className={inter.className}>
+        <SearchProvider>
+          <Navbar />
+          <SearchBar />
+          <Option />
+          {children}
+        </SearchProvider>
       </body>
     </html>
   );
