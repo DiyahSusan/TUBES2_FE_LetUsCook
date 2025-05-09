@@ -39,7 +39,7 @@ export default function ResultRenderer() {
     };
   }, []);
 
-  console.log("Data di ResultRenderer:", data); // Tambahkan log ini
+  console.log("Data di ResultRenderer:", data); 
 
   if (!data) {
     return <div className="p-4 text-gray-500">No results available</div>;
@@ -100,15 +100,15 @@ export default function ResultRenderer() {
   };
 
   const renderPair = (pair: Pair_recipe | undefined, depth: number) => {
-    console.log("Rendering pair:", pair, "at depth:", depth); // Tambahkan log ini
+    console.log("Rendering pair:", pair, "at depth:", depth); 
     if (!pair) {
       console.log("Invalid pair encountered!"); // Tambahkan log ini
       return <div className="p-4 text-red-500">Invalid pair encountered</div>;
     }
     return (
       <>
-        {renderNode(pair.first, depth)}
-        {renderNode(pair.second, depth)}
+        {renderNode(pair.First, depth)}
+        {renderNode(pair.Second, depth)}
       </>
     );
   };
