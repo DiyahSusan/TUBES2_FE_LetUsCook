@@ -3,26 +3,32 @@ import { useState } from 'react';
 import { useSearch } from '@/components/SearchContext';
 
 export default function SearchBar() {
-  const { searchQuery, setSearchQuery, mode, algorithm } = useSearch();
+  const { 
+    searchQuery, 
+    setSearchQuery, 
+    mode, 
+    algorithm,
+    recipeCount 
+  } = useSearch();
+  
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
     if (!searchQuery) {
       setError("Please enter a search query");
       return;
     }
 
     if (!mode) {
-      setError("Please select a mode (single or multiple)");
+      setError("Please select a mode");
       return;
     }
 
     if (!algorithm) {
-      setError("Please select an algorithm (BFS or DFS)");
+      setError("Please select an algorithm");
       return;
     }
 
@@ -30,7 +36,12 @@ export default function SearchBar() {
       setLoading(true);
       setError(null);
       
-      console.log("Sending request:", { query: searchQuery, mode, algorithm });
+      console.log("Sending request:", { 
+        query: searchQuery, 
+        mode, 
+        algorithm,
+        recipeCount 
+      });
       
       const response = await fetch('http://localhost:8080/api/search', {
         method: 'POST',
@@ -40,36 +51,29 @@ export default function SearchBar() {
         body: JSON.stringify({
           query: searchQuery,
           mode: mode,
-          algorithm: algorithm
+          algorithm: algorithm,
+          countRicipe: recipeCount // Pastikan nama field sesuai dengan backend
         }),
       });
 
-      console.log("Raw response:", response);
-      
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to fetch results');
       }
 
       const data = await response.json();
-      console.log("Response data:", data);
       
       if (!data.success) {
         throw new Error(data.error || 'Unknown error occurred');
       }
 
-      // Store results in context or pass to parent
-      // This depends on your app structure
-      if (window.dispatchEvent) {
-        // Use a custom event to communicate with other components
-        window.dispatchEvent(new CustomEvent('search-results', { 
-          detail: data.data 
-        }));
-      }
+      window.dispatchEvent(new CustomEvent('search-results', { 
+        detail: data.data 
+      }));
       
     } catch (err) {
       console.error("Search error:", err);
-      setError(err instanceof Error ? err.message : 'An error occurred during search');
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -95,17 +99,8 @@ export default function SearchBar() {
         </button>
       </form>
       
-      {error && (
-        <div className="error-message text-red-500 mt-2">
-          {error}
-        </div>
-      )}
-      
-      {loading && (
-        <div className="loading text-gray-500 mt-2">
-          Loading results...
-        </div>
-      )}
+      {error && <div className="error-message text-red-500 mt-2">{error}</div>}
+      {loading && <div className="loading text-gray-500 mt-2">Loading...</div>}
     </div>
   );
 }
