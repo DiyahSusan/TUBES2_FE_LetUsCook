@@ -20,7 +20,7 @@ export default function Option() {
 
 
   return (
-    <div className="options-container p-4 bg-gray-50 rounded-md mb-4">
+    <div className="options-container p-4 bg-white rounded-md mb-4 justify-items-center">
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="mode-selector">
           <h3 className="text-sm font-medium mb-2 text-gray-600">Recipe Mode:</h3>

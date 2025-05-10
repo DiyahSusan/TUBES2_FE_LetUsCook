@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
     ];
 
     return (
-        <nav className="bg-blue-200 shadow-sm">
+        <nav className="bg-blue-200 shadow-sm p-2">
         <div className="max-w-7xl mx-auto px-4 py-3">
             <div className="flex justify-between items-center">
             {/* Konten sisi kiri */}

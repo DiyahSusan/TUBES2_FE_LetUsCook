@@ -80,14 +80,14 @@ export default function SearchBar() {
   };
 
   return (
-    <div className="search-container">
-      <form onSubmit={handleSearch} className="flex items-center gap-2">
+    <div className="search-container justify-items-center">
+      <form onSubmit={handleSearch} className="flex items-center gap-2 w-2xl p-7">
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Enter recipe URL or search query"
-          className="search-input flex-grow p-2 border rounded text-black"
+          className="search-input flex-grow p-2 border rounded text-gray-700"
         />
         
         <button 
