@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 
+// Import elements data
+import elementsData from '../public/elements.json';
+
 interface RecipeTree {
   name: string;
   children?: Pair_recipe[];
@@ -11,100 +14,212 @@ interface Pair_recipe {
   Second: RecipeTree;
 }
 
-export default function ResultRenderer() {
+interface ElementData {
+  name: string;
+  image_url: string;
+}
+
+export default function EnhancedTreeRenderer() {
   const [data, setData] = useState<RecipeTree | RecipeTree[] | null>(null);
-  const [count, setCount] = useState<number | null>(null); 
-  const [duration, setDuration] = useState<number | null>(null); 
-  const [expandedNodes, setExpandedNodes] = useState<{ [key: string]: boolean }>(
-    {}
-  );
+  const [count, setCount] = useState<number | null>(null);
+  const [duration, setDuration] = useState<number | null>(null);
+  const [expandedNodes, setExpandedNodes] = useState<{ [key: string]: boolean }>({});
+  const [elements, setElements] = useState<Record<string, ElementData>>({});
 
   useEffect(() => {
-      const handleSearchResults = (event: CustomEvent) => {
-          console.log("Received search results:", event.detail);
-
-          // Pastikan data diterima sesuai struktur yang benar
-          const { tree, count, duration } = event.detail;
-
-          if (!tree || typeof count !== "number") {
-              console.error("Invalid data format received from search results");
-              return;
-          }
-
-          setData(tree); // Simpan hanya bagian tree
-          setCount(count); // Simpan count secara terpisah
-          setDuration(duration);
-      };
-
-      console.log("Adding event listener for search results");
-
-      window.addEventListener(
-          "search-results",
-          handleSearchResults as EventListener
-      );
-
-      return () => {
-          console.log("Cleaning up event listener for search results");
-          window.removeEventListener(
-              "search-results",
-              handleSearchResults as EventListener
-          );
-      };
+    // Create a mapping of element names to their data for easier lookup
+    const elementMap: Record<string, ElementData> = {};
+    elementsData.forEach(element => {
+      elementMap[element.name] = element;
+    });
+    setElements(elementMap);
+    
+    // Log untuk debugging
+    console.log("Loaded elements:", elementMap);
   }, []);
 
+  useEffect(() => {
+    const handleSearchResults = (event: CustomEvent) => {
+      const { tree, count, duration } = event.detail;
+      if (!tree || typeof count !== "number") return;
+      
+      setData(tree);
+      setCount(count);
+      setDuration(duration);
+    };
 
-  console.log("Data di ResultRenderer:", data); 
-
-  if (!data) {
-    return <div className="p-4 text-gray-500">No results available</div>;
-  }
-
-  if (!data || typeof data !== "object") {
-    return <div className="p-4 text-red-500">Invalid data format received</div>;
-  }
+    window.addEventListener("search-results", handleSearchResults as EventListener);
+    return () => window.removeEventListener("search-results", handleSearchResults as EventListener);
+  }, []);
 
   const toggleNode = (nodeId: string) => {
-    setExpandedNodes((prev) => ({
-      ...prev,
-      [nodeId]: !prev[nodeId],
-    }));
+    setExpandedNodes(prev => ({ ...prev, [nodeId]: !prev[nodeId] }));
   };
 
-  const renderNode = (node: RecipeTree | undefined, depth = 0) => {
-    console.log("Rendering node:", node, "at depth:", depth); // Tambahkan log ini
-    if (!node) {
-      console.log("Invalid node encountered!"); // Pastikan log ini muncul saat error
-      return <div className="p-4 text-red-500">Invalid node encountered</div>;
+  const getElementImage = (name: string) => {
+    // Cek apakah elemen ada dan punya image_url
+    if (elements[name]?.image_url) {
+      // Bersihkan URL Wikia dengan menghapus parameter di akhir URL
+      let url = elements[name].image_url;
+      
+      // Jika URL dari Wikia, bersihkan parameternya
+      if (url.includes("wikia.nocookie.net") || url.includes("static.wikia")) {
+        // Hapus bagian ?cb=... atau revision/latest?cb=...
+        url = url.split(/\?|\/revision\/latest/)[0];
+        
+        // Tambahkan .png jika tidak ada ekstensi file
+        if (!url.match(/\.(png|jpg|jpeg|gif|svg)$/i)) {
+          url += ".png";
+        }
+      }
+      
+      return url;
     }
+    
+    // Fallback ke placeholder
+    return "/api/placeholder/40/40";
+  };
 
-    const nodeId = `${node.name || "unnamed"}-${depth}`;
-    const isExpanded = expandedNodes[nodeId] || false;
+  const renderCenteredTree = (node: RecipeTree | undefined) => {
+    if (!node) return null;
+    
+    const nodeId = `${node.name}`;
+    const isExpanded = expandedNodes[nodeId] ?? true;
+    const hasChildren = node.children && node.children.length > 0;
+    const imageUrl = getElementImage(node.name);
 
     return (
-      <div
-        key={nodeId}
-        className="recipe-node border-l-2 border-gray-300 pl-4 my-2"
-        style={{ marginLeft: `${depth * 20}px` }}
-      >
-        <div
-          className="node-header flex items-center cursor-pointer hover:bg-gray-100 p-2 rounded"
-          onClick={() =>
-            node.children && node.children.length > 0 && toggleNode(nodeId)
-          }
+      <div className="flex flex-col items-center w-full">
+        {/* Node content */}
+        <div 
+          className={`px-4 py-3 rounded-lg border-2 border-blue-400 bg-blue-50 hover:bg-blue-100 
+                    ${hasChildren ? 'cursor-pointer' : ''} mb-4 shadow-md`}
+          onClick={() => hasChildren && toggleNode(nodeId)}
         >
-          {node.children && node.children.length > 0 && (
-            <span className="expand-icon mr-2">{isExpanded ? "▼" : "►"}</span>
-          )}
-          <span className="node-title font-medium">
-            {node.name || "Unnamed Node"}
-          </span>
+          <div className="flex items-center">
+            {hasChildren && (
+              <span className="mr-2 text-blue-600">
+                {isExpanded ? '▼' : '▶'}
+              </span>
+            )}
+            <div className="w-10 h-10 mr-2 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
+              <img 
+                src={imageUrl} 
+                alt={node.name}
+                className="max-w-full max-h-full object-contain"
+                onError={(e) => {
+                  // Fallback if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.src = "/api/placeholder/40/40";
+                }}
+              />
+            </div>
+            <span className="font-bold text-blue-800">{node.name}</span>
+          </div>
         </div>
 
-        {isExpanded && node.children && node.children.length > 0 && (
-          <div className="children ml-4">
-            {node.children.map((pair, index) => (
-              <div key={`${nodeId}-pair-${index}`}>
-                {renderPair(pair, depth + 1)}
+        {/* Vertical connector */}
+        {isExpanded && hasChildren && (
+          <div className="h-8 border-l-2 border-blue-300"></div>
+        )}
+
+        {/* Children container */}
+        {isExpanded && hasChildren && (
+          <div className="flex justify-center w-full">
+            <div className="flex flex-wrap justify-center gap-8">
+              {node.children?.map((pair, index) => (
+                <div key={`${nodeId}-pair-${index}`} className="flex flex-col items-center">
+                  <div className="flex justify-center gap-8">
+                    <div className="flex flex-col items-center">
+                      {pair.First && (
+                        <div className="flex flex-col items-center">
+                          <div className="h-6 border-l-2 border-blue-300"></div>
+                          {renderChildNode(pair.First, `${nodeId}-first-${index}`)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-col items-center">
+                      {pair.Second && (
+                        <div className="flex flex-col items-center">
+                          <div className="h-6 border-l-2 border-blue-300"></div>
+                          {renderChildNode(pair.Second, `${nodeId}-second-${index}`)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderChildNode = (node: RecipeTree, keyPrefix: string) => {
+    if (!node) return null;
+    
+    const nodeId = `${keyPrefix}-${node.name}`;
+    const isExpanded = expandedNodes[nodeId] ?? true;
+    const hasChildren = node.children && node.children.length > 0;
+    const imageUrl = getElementImage(node.name);
+
+    return (
+      <div className="flex flex-col items-center">
+        {/* Node content */}
+        <div 
+          className={`px-3 py-2 rounded-lg border border-green-400 bg-green-50 hover:bg-green-100 
+                    ${hasChildren ? 'cursor-pointer' : ''} shadow-sm`}
+          onClick={() => hasChildren && toggleNode(nodeId)}
+        >
+          <div className="flex items-center">
+            {hasChildren && (
+              <span className="mr-1 text-green-600">
+                {isExpanded ? '▼' : '▶'}
+              </span>
+            )}
+            <div className="w-8 h-8 mr-2 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
+              <img 
+                src={imageUrl} 
+                alt={node.name}
+                className="max-w-full max-h-full object-contain"
+                onError={(e) => {
+                  // Fallback if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.src = "/api/placeholder/40/40";
+                }}
+              />
+            </div>
+            <span className="font-medium text-green-800">{node.name}</span>
+          </div>
+        </div>
+
+        {/* Vertical connector */}
+        {isExpanded && hasChildren && (
+          <div className="h-6 border-l-2 border-green-300"></div>
+        )}
+
+        {/* Children container */}
+        {isExpanded && hasChildren && (
+          <div className="flex justify-center gap-4">
+            {node.children?.map((pair, index) => (
+              <div key={`${nodeId}-pair-${index}`} className="flex gap-4">
+                <div className="flex flex-col items-center">
+                  {pair.First && (
+                    <div className="flex flex-col items-center">
+                      <div className="h-4 border-l-2 border-green-300"></div>
+                      {renderChildNode(pair.First, `${nodeId}-first-${index}`)}
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col items-center">
+                  {pair.Second && (
+                    <div className="flex flex-col items-center">
+                      <div className="h-4 border-l-2 border-green-300"></div>
+                      {renderChildNode(pair.Second, `${nodeId}-second-${index}`)}
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -113,57 +228,36 @@ export default function ResultRenderer() {
     );
   };
 
-  const renderPair = (pair: Pair_recipe | undefined, depth: number) => {
-    console.log("Rendering pair:", pair, "at depth:", depth); 
-    if (!pair) {
-      console.log("Invalid pair encountered!"); // Tambahkan log ini
-      return <div className="p-4 text-red-500">Invalid pair encountered</div>;
-    }
-    return (
-      <>
-        {renderNode(pair.First, depth)}
-        {renderNode(pair.Second, depth)}
-      </>
-    );
-  };
-
   const formatDuration = (s: number | null) => {
     if (s === null) return "N/A";
-    
-    const ms = (s*1000).toFixed(2) + " ms";
-    
-    return ms;
+    return `${(s * 1000).toFixed(2)} ms`;
   };
 
-  if (Array.isArray(data)) {
-    return (
-      <div className="results-tree p-4 text-gray-700">
-        <h2 className="text-xl text-gray-700 font-bold mb-4">Recipe Results</h2>
-        {data.map((item) => renderNode(item))}
-        {count !== null && (
-          <p className="text-gray-500 mb-4">
-            Total nodes visited: <span className="font-semibold">{count}</span>
-          </p>
-        )}
-        <p className="text-gray-500 mb-4">
-            Duration: <span className="font-semibold">{formatDuration(duration)}</span>
-        </p>
+  if (!data) return <div className="p-4 text-gray-500">No results available</div>;
+  if (typeof data !== "object") return <div className="p-4 text-red-500">Invalid data format</div>;
+
+  return (
+    <div className="p-4 min-h-screen">
+      <h2 className="text-xl font-bold mb-6 text-center text-gray-700">Recipe Tree</h2>
+      
+      <div className="bg-white p-8 rounded-lg border border-gray-200 shadow-lg overflow-auto">
+        <div className="flex justify-center w-full">
+          {Array.isArray(data) ? (
+            data.map((item, index) => (
+              <div key={`root-${index}`} className="mb-4">
+                {renderCenteredTree(item)}
+              </div>
+            ))
+          ) : (
+            renderCenteredTree(data)
+          )}
+        </div>
       </div>
-    );
-  } else {
-    return (
-      <div className="results-tree p-4 text-gray-700">
-        <h2 className="text-xl text-gray-700 font-bold mb-4">Recipe Result</h2>
-        {renderNode(data)}
-        {count !== null && (
-          <p className="text-gray-500 mb-4">
-            Total nodes visited: <span className="font-semibold">{count}</span>
-          </p>
-        )}
-        <p className="text-gray-500 mb-4">
-            Duration: <span className="font-semibold">{formatDuration(duration)}</span>
-        </p>
+      
+      <div className="mt-4 text-sm text-gray-600 text-center">
+        {count !== null && <p>Total nodes: <span className="font-semibold">{count}</span></p>}
+        <p>Duration: <span className="font-semibold">{formatDuration(duration)}</span></p>
       </div>
-    );
-  }
+    </div>
+  );
 }
