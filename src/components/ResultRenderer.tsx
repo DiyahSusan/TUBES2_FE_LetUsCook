@@ -14,6 +14,7 @@ interface Pair_recipe {
 export default function ResultRenderer() {
   const [data, setData] = useState<RecipeTree | RecipeTree[] | null>(null);
   const [count, setCount] = useState<number | null>(null); 
+  const [duration, setDuration] = useState<number | null>(null); 
   const [expandedNodes, setExpandedNodes] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -23,7 +24,7 @@ export default function ResultRenderer() {
           console.log("Received search results:", event.detail);
 
           // Pastikan data diterima sesuai struktur yang benar
-          const { tree, count } = event.detail;
+          const { tree, count, duration } = event.detail;
 
           if (!tree || typeof count !== "number") {
               console.error("Invalid data format received from search results");
@@ -32,6 +33,7 @@ export default function ResultRenderer() {
 
           setData(tree); // Simpan hanya bagian tree
           setCount(count); // Simpan count secara terpisah
+          setDuration(duration);
       };
 
       console.log("Adding event listener for search results");
@@ -125,6 +127,14 @@ export default function ResultRenderer() {
     );
   };
 
+  const formatDuration = (s: number | null) => {
+    if (s === null) return "N/A";
+    
+    const ms = (s*1000).toFixed(2) + " ms";
+    
+    return ms;
+  };
+
   if (Array.isArray(data)) {
     return (
       <div className="results-tree p-4 text-gray-700">
@@ -135,6 +145,9 @@ export default function ResultRenderer() {
             Total nodes visited: <span className="font-semibold">{count}</span>
           </p>
         )}
+        <p className="text-gray-500 mb-4">
+            Duration: <span className="font-semibold">{formatDuration(duration)}</span>
+        </p>
       </div>
     );
   } else {
@@ -147,6 +160,9 @@ export default function ResultRenderer() {
             Total nodes visited: <span className="font-semibold">{count}</span>
           </p>
         )}
+        <p className="text-gray-500 mb-4">
+            Duration: <span className="font-semibold">{formatDuration(duration)}</span>
+        </p>
       </div>
     );
   }

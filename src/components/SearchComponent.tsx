@@ -1,6 +1,6 @@
 "use client"
 import { useState } from 'react';
-import { useSearch } from './SearchContext'; // Adjust path as needed
+import { useSearch } from './SearchContext'; 
 
 interface SearchComponentProps {
   onResultsReceived?: (results: any) => void;
