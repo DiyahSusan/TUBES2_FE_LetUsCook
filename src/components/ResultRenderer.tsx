@@ -7,8 +7,8 @@ interface RecipeTree {
 }
 
 interface Pair_recipe {
-  first: RecipeTree;
-  second: RecipeTree;
+  First: RecipeTree;
+  Second: RecipeTree;
 }
 
 export default function ResultRenderer() {
@@ -115,14 +115,14 @@ export default function ResultRenderer() {
 
   if (Array.isArray(data)) {
     return (
-      <div className="results-tree p-4">
+      <div className="results-tree p-4 text-gray-700">
         <h2 className="text-xl text-gray-700 font-bold mb-4">Recipe Results</h2>
         {data.map((item) => renderNode(item))}
       </div>
     );
   } else {
     return (
-      <div className="results-tree p-4">
+      <div className="results-tree p-4 text-gray-700">
         <h2 className="text-xl text-gray-700 font-bold mb-4">Recipe Result</h2>
         {renderNode(data)}
       </div>
