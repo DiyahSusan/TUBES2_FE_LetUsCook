@@ -27,7 +27,7 @@ const Navbar: React.FC = () => {
                 Let Us Cook!
             </div>
             
-            {/* Konten sisi kanan */}
+            {/* Konten sisi kanan
             <div className='flex gap-4'>
                 <button className={`rounded-3xl px-3.5 py-2.5 transition-colors ${
                 mode === 'single' 
@@ -46,7 +46,7 @@ const Navbar: React.FC = () => {
                 onClick={() => handleClick('multiple')}>
                     Multiple recipe
                 </button>
-            </div>
+            </div> */}
             </div>
         </div>
         </nav>

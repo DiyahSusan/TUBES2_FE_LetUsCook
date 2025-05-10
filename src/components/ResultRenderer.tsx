@@ -13,31 +13,43 @@ interface Pair_recipe {
 
 export default function ResultRenderer() {
   const [data, setData] = useState<RecipeTree | RecipeTree[] | null>(null);
+  const [count, setCount] = useState<number | null>(null); 
   const [expandedNodes, setExpandedNodes] = useState<{ [key: string]: boolean }>(
     {}
   );
 
   useEffect(() => {
-    const handleSearchResults = (event: CustomEvent) => {
-      console.log("Received search results:", event.detail);
-      setData(event.detail);
-    };
+      const handleSearchResults = (event: CustomEvent) => {
+          console.log("Received search results:", event.detail);
 
-    console.log("Adding event listener for search results");
+          // Pastikan data diterima sesuai struktur yang benar
+          const { tree, count } = event.detail;
 
-    window.addEventListener(
-      "search-results",
-      handleSearchResults as EventListener
-    );
+          if (!tree || typeof count !== "number") {
+              console.error("Invalid data format received from search results");
+              return;
+          }
 
-    return () => {
-      console.log("Cleaning up event listener for search results");
-      window.removeEventListener(
-        "search-results",
-        handleSearchResults as EventListener
+          setData(tree); // Simpan hanya bagian tree
+          setCount(count); // Simpan count secara terpisah
+      };
+
+      console.log("Adding event listener for search results");
+
+      window.addEventListener(
+          "search-results",
+          handleSearchResults as EventListener
       );
-    };
+
+      return () => {
+          console.log("Cleaning up event listener for search results");
+          window.removeEventListener(
+              "search-results",
+              handleSearchResults as EventListener
+          );
+      };
   }, []);
+
 
   console.log("Data di ResultRenderer:", data); 
 
@@ -45,7 +57,7 @@ export default function ResultRenderer() {
     return <div className="p-4 text-gray-500">No results available</div>;
   }
 
-  if (typeof data !== "object" || (!Array.isArray(data) && !data.name)) {
+  if (!data || typeof data !== "object") {
     return <div className="p-4 text-red-500">Invalid data format received</div>;
   }
 
@@ -118,6 +130,11 @@ export default function ResultRenderer() {
       <div className="results-tree p-4 text-gray-700">
         <h2 className="text-xl text-gray-700 font-bold mb-4">Recipe Results</h2>
         {data.map((item) => renderNode(item))}
+        {count !== null && (
+          <p className="text-gray-500 mb-4">
+            Total nodes visited: <span className="font-semibold">{count}</span>
+          </p>
+        )}
       </div>
     );
   } else {
@@ -125,6 +142,11 @@ export default function ResultRenderer() {
       <div className="results-tree p-4 text-gray-700">
         <h2 className="text-xl text-gray-700 font-bold mb-4">Recipe Result</h2>
         {renderNode(data)}
+        {count !== null && (
+          <p className="text-gray-500 mb-4">
+            Total nodes visited: <span className="font-semibold">{count}</span>
+          </p>
+        )}
       </div>
     );
   }
