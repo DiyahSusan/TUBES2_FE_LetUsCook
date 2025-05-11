@@ -86,7 +86,7 @@ export default function SearchBar() {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Enter recipe URL or search query"
+          placeholder="Enter recipe"
           className="search-input flex-grow p-2 border rounded text-gray-700"
         />
         

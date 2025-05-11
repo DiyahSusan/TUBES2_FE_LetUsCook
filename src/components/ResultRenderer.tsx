@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 
-// Import elements data
 import elementsData from '../public/elements.json';
 
 interface RecipeTree {
@@ -27,14 +26,13 @@ export default function EnhancedTreeRenderer() {
   const [elements, setElements] = useState<Record<string, ElementData>>({});
 
   useEffect(() => {
-    // Create a mapping of element names to their data for easier lookup
+    // mapping of element names to their img
     const elementMap: Record<string, ElementData> = {};
     elementsData.forEach(element => {
       elementMap[element.name] = element;
     });
     setElements(elementMap);
     
-    // Log untuk debugging
     console.log("Loaded elements:", elementMap);
   }, []);
 
@@ -59,15 +57,11 @@ export default function EnhancedTreeRenderer() {
   const getElementImage = (name: string) => {
     // Cek apakah elemen ada dan punya image_url
     if (elements[name]?.image_url) {
-      // Bersihkan URL Wikia dengan menghapus parameter di akhir URL
       let url = elements[name].image_url;
       
-      // Jika URL dari Wikia, bersihkan parameternya
       if (url.includes("wikia.nocookie.net") || url.includes("static.wikia")) {
-        // Hapus bagian ?cb=... atau revision/latest?cb=...
         url = url.split(/\?|\/revision\/latest/)[0];
         
-        // Tambahkan .png jika tidak ada ekstensi file
         if (!url.match(/\.(png|jpg|jpeg|gif|svg)$/i)) {
           url += ".png";
         }
@@ -89,7 +83,7 @@ export default function EnhancedTreeRenderer() {
     const imageUrl = getElementImage(node.name);
 
     return (
-      <div className="flex flex-col items-center w-full">
+      <div className="flex flex-col items-center">
         {/* Node content */}
         <div 
           className={`px-4 py-3 rounded-lg border-2 border-blue-400 bg-blue-50 hover:bg-blue-100 
@@ -125,7 +119,7 @@ export default function EnhancedTreeRenderer() {
 
         {/* Children container */}
         {isExpanded && hasChildren && (
-          <div className="flex justify-center w-full">
+          <div className="flex justify-center">
             <div className="flex flex-wrap justify-center gap-8">
               {node.children?.map((pair, index) => (
                 <div key={`${nodeId}-pair-${index}`} className="flex flex-col items-center">
@@ -240,8 +234,9 @@ export default function EnhancedTreeRenderer() {
     <div className="p-4 min-h-screen">
       <h2 className="text-xl font-bold mb-6 text-center text-gray-700">Recipe Tree</h2>
       
-      <div className="bg-white p-8 rounded-lg border border-gray-200 shadow-lg overflow-auto">
-        <div className="flex justify-center w-full">
+      {/* horizontal scroll */}
+      <div className="bg-white p-8 rounded-lg border border-gray-200 shadow-lg overflow-x-auto">
+        <div className="flex justify-center min-w-max">
           {Array.isArray(data) ? (
             data.map((item, index) => (
               <div key={`root-${index}`} className="mb-4">
@@ -257,6 +252,11 @@ export default function EnhancedTreeRenderer() {
       <div className="mt-4 text-sm text-gray-600 text-center">
         {count !== null && <p>Total nodes: <span className="font-semibold">{count}</span></p>}
         <p>Duration: <span className="font-semibold">{formatDuration(duration)}</span></p>
+      </div>
+      
+      {/*scroll instruction */}
+      <div className="mt-2 text-xs text-gray-500 text-center">
+        <p>← Scroll horizontally if content is cut off →</p>
       </div>
     </div>
   );
