@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type RecipeMode = 'single' | 'multiple' | null;
-type SearchAlgorithm = 'bfs' | 'dfs' | 'bidirectional'|null;
+type SearchAlgorithm = 'bfs' | 'dfs' |null;
 
 interface SearchContextType {
   mode: RecipeMode;

@@ -67,7 +67,7 @@ export default function Option() {
             >
               DFS
             </button>
-            <button 
+            {/* <button 
               type="button"
               className={`px-3 py-1 rounded border ${algorithm === 'bidirectional' 
                 ? 'bg-blue-500 text-white border-blue-500' 
@@ -75,7 +75,7 @@ export default function Option() {
               onClick={() => setAlgorithm('bidirectional')}
             >
               Bidirectional
-            </button>
+            </button> */}
           </div>
         </div>
 
