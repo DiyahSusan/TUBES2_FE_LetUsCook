@@ -3,11 +3,13 @@ import { useState } from 'react';
 import { useSearch } from './SearchContext'; 
 
 interface SearchComponentProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onResultsReceived?: (results: any) => void;
 }
 
 export default function SearchComponent({ onResultsReceived }: SearchComponentProps) {
   const { mode, algorithm, searchQuery, recipeCount , setSearchQuery, setMode, setAlgorithm} = useSearch();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
