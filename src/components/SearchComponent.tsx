@@ -39,7 +39,7 @@ export default function SearchComponent({ onResultsReceived }: SearchComponentPr
       
       console.log("Sending request:", { query: searchQuery, mode, algorithm, recipeCount});
       
-      const response = await fetch('https://tubes2beletuscook-production.up.railway.app/api/search', {
+      const response = await fetch('https://tubes2beletuscook-production.up.railway.app:8080/api/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

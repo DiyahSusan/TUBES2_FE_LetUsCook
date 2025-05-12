@@ -43,7 +43,7 @@ export default function SearchBar() {
         recipeCount 
       });
       
-      const response = await fetch('https://tubes2beletuscook-production.up.railway.app/api/search', {
+      const response = await fetch('https://tubes2beletuscook-production.up.railway.app:8080/api/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,6 +55,9 @@ export default function SearchBar() {
           countRicipe: recipeCount // Pastikan nama field sesuai dengan backend
         }),
       });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
 
       if (!response.ok) {
         const errorData = await response.json();
