@@ -7,7 +7,7 @@ interface SearchComponentProps {
 }
 
 export default function SearchComponent({ onResultsReceived }: SearchComponentProps) {
-  const { mode, algorithm, searchQuery, recipeCount , setSearchQuery, setMode, setAlgorithm, setRecipeCount} = useSearch();
+  const { mode, algorithm, searchQuery, recipeCount , setSearchQuery, setMode, setAlgorithm} = useSearch();
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

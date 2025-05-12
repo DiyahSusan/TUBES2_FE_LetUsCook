@@ -12,7 +12,7 @@ export default function Option() {
     setRecipeCount // Gunakan setter dari context
   } = useSearch();
 
-  const [localCount, setLocalCount] = useState(contextCount);
+  const [localCount] = useState(contextCount);
 
   useEffect(() => {
     setRecipeCount(localCount);
