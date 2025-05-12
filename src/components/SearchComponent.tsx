@@ -1,13 +1,13 @@
 "use client"
 import { useState } from 'react';
-import { useSearch } from './SearchContext'; // Adjust path as needed
+import { useSearch } from './SearchContext'; 
 
 interface SearchComponentProps {
   onResultsReceived?: (results: any) => void;
 }
 
 export default function SearchComponent({ onResultsReceived }: SearchComponentProps) {
-  const { mode, algorithm, searchQuery, setSearchQuery, setMode, setAlgorithm } = useSearch();
+  const { mode, algorithm, searchQuery, recipeCount , setSearchQuery, setMode, setAlgorithm, setRecipeCount} = useSearch();
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +35,7 @@ export default function SearchComponent({ onResultsReceived }: SearchComponentPr
       setLoading(true);
       setError(null);
       
-      console.log("Sending request:", { query: searchQuery, mode, algorithm });
+      console.log("Sending request:", { query: searchQuery, mode, algorithm, recipeCount});
       
       const response = await fetch('http://localhost:8080/api/search', {
         method: 'POST',
@@ -45,7 +45,8 @@ export default function SearchComponent({ onResultsReceived }: SearchComponentPr
         body: JSON.stringify({
           query: searchQuery,
           mode: mode,
-          algorithm: algorithm
+          algorithm: algorithm,
+          recipeCount: recipeCount
         }),
       });
 
@@ -121,6 +122,13 @@ export default function SearchComponent({ onResultsReceived }: SearchComponentPr
           >
             DFS
           </button>
+          {/* <button 
+            type="button"
+            className={`algo-btn ${algorithm === 'bidirectional' ? 'active' : ''}`}
+            onClick={() => setAlgorithm('bidirectional')}
+          >
+            Bidirectional
+          </button> */}
         </div>
         
         <button 

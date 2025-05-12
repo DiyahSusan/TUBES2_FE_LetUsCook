@@ -23,10 +23,10 @@ export default function Home() {
       <div className="mb-8">
         <h1 className="text-2xl text-gray-700 font-bold mb-4">Recipe Search</h1>
         <p className="text-gray-600">
-          Search for recipes and see the recipe tree using BFS or DFS algorithms.
+          Search for recipes and see the recipe tree using BFS, DFS, or bidirectional algorithms.
         </p>
         
-        {showTestButton && (
+        {/* {showTestButton && (
           <div className="mt-4">
             <button 
               onClick={() => {
@@ -41,7 +41,7 @@ export default function Home() {
               Click to verify connection to your Go backend server
             </p>
           </div>
-        )}
+        )} */}
       </div>
       
       {/* Result Renderer will listen for search results */}
