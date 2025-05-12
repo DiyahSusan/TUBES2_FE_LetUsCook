@@ -9,7 +9,7 @@ export default function Home() {
       <div className="mb-8">
         <h1 className="text-2xl text-gray-700 font-bold mb-4">Recipe Search</h1>
         <p className="text-gray-600">
-          Search for recipes and see the recipe tree using BFS, DFS, or bidirectional algorithms.
+          Search for recipes and see the recipe tree using BFS or DFS algorithms.
         </p>
     
       </div>
