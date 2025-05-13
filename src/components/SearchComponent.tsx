@@ -69,7 +69,6 @@ export default function SearchComponent({ onResultsReceived }: SearchComponentPr
       // Set local results state
       setResults(data.data);
       
-      // Also pass results to parent component if callback provided
       if (onResultsReceived) {
         onResultsReceived(data.data);
       }
@@ -154,7 +153,6 @@ export default function SearchComponent({ onResultsReceived }: SearchComponentPr
         </div>
       )}
       
-      {/* You can choose to show results here or rely on the parent component */}
       {results && !loading && !onResultsReceived && (
         <div className="results-container">
           <h2>Search Results</h2>

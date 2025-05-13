@@ -55,7 +55,7 @@ export default function EnhancedTreeRenderer() {
   };
 
   const getElementImage = (name: string) => {
-    // Cek apakah elemen ada dan punya image_url
+    // cek apakah elemen ada dan punya image_url
     if (elements[name]?.image_url) {
       let url = elements[name].image_url;
       
@@ -68,9 +68,7 @@ export default function EnhancedTreeRenderer() {
       }
       
       return url;
-    }
-    
-    // Fallback ke placeholder
+    } 
     return "/api/placeholder/40/40";
   };
 
@@ -84,7 +82,7 @@ export default function EnhancedTreeRenderer() {
 
     return (
       <div className="flex flex-col items-center">
-        {/* Node content */}
+        {/* node content */}
         <div 
           className={`px-4 py-3 rounded-lg border-2 border-blue-400 bg-blue-50 hover:bg-blue-100 
                     ${hasChildren ? 'cursor-pointer' : ''} mb-4 shadow-md`}
@@ -102,7 +100,6 @@ export default function EnhancedTreeRenderer() {
                 alt={node.name}
                 className="max-w-full max-h-full object-contain"
                 onError={(e) => {
-                  // Fallback if image fails to load
                   const target = e.target as HTMLImageElement;
                   target.src = "/api/placeholder/40/40";
                 }}
@@ -112,12 +109,12 @@ export default function EnhancedTreeRenderer() {
           </div>
         </div>
 
-        {/* Vertical connector */}
+        {/* vertical connector */}
         {isExpanded && hasChildren && (
           <div className="h-8 border-l-2 border-blue-300"></div>
         )}
 
-        {/* Children container */}
+        {/* children container */}
         {isExpanded && hasChildren && (
           <div className="flex justify-center">
             <div className="flex flex-wrap justify-center gap-8">
@@ -160,7 +157,7 @@ export default function EnhancedTreeRenderer() {
 
     return (
       <div className="flex flex-col items-center">
-        {/* Node content */}
+        {/* node content */}
         <div 
           className={`px-3 py-2 rounded-lg border border-green-400 bg-green-50 hover:bg-green-100 
                     ${hasChildren ? 'cursor-pointer' : ''} shadow-sm`}
@@ -178,7 +175,6 @@ export default function EnhancedTreeRenderer() {
                 alt={node.name}
                 className="max-w-full max-h-full object-contain"
                 onError={(e) => {
-                  // Fallback if image fails to load
                   const target = e.target as HTMLImageElement;
                   target.src = "/api/placeholder/40/40";
                 }}
@@ -188,12 +184,12 @@ export default function EnhancedTreeRenderer() {
           </div>
         </div>
 
-        {/* Vertical connector */}
+        {/* vertical connector */}
         {isExpanded && hasChildren && (
           <div className="h-6 border-l-2 border-green-300"></div>
         )}
 
-        {/* Children container */}
+        {/* children container */}
         {isExpanded && hasChildren && (
           <div className="flex justify-center gap-4">
             {node.children?.map((pair, index) => (

@@ -52,7 +52,7 @@ export default function SearchBar() {
           query: searchQuery,
           mode: mode,
           algorithm: algorithm,
-          countRicipe: recipeCount // Pastikan nama field sesuai dengan backend
+          countRicipe: recipeCount 
         }),
       });
 

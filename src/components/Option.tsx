@@ -6,10 +6,10 @@ export default function Option() {
   const { 
     mode, 
     algorithm, 
-    recipeCount: contextCount, // Ambil dari context
+    recipeCount: contextCount, 
     setMode, 
     setAlgorithm,
-    setRecipeCount // Gunakan setter dari context
+    setRecipeCount 
   } = useSearch();
 
   const [localCount] = useState(contextCount);
@@ -79,7 +79,7 @@ export default function Option() {
           </div>
         </div>
 
-        {/* Input box untuk jumlah resep (muncul hanya saat multiple) */}
+        {/* input box untuk jumlah resep (muncul hanya saat multiple) */}
         {mode === 'multiple' && (
           <div className="count-selector">
             <h3 className="text-sm font-medium mb-2 text-gray-600">Number of Recipes:</h3>
