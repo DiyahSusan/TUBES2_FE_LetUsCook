@@ -124,13 +124,13 @@ export default function SearchComponent({ onResultsReceived }: SearchComponentPr
           >
             DFS
           </button>
-          {/* <button 
+          <button 
             type="button"
             className={`algo-btn ${algorithm === 'bidirectional' ? 'active' : ''}`}
             onClick={() => setAlgorithm('bidirectional')}
           >
             Bidirectional
-          </button> */}
+          </button>
         </div>
         
         <button 
